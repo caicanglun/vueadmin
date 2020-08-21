@@ -18,27 +18,31 @@
 		<!--列表-->
 		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 		
-			<el-table-column prop="user_id" label="编号" width="100" sortable>
+			<el-table-column prop="messageCode" label="编号" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="会员" width="100" sortable>
+		
+			<el-table-column prop="userCode" label="用户ID" width="100" sortable>
 			</el-table-column>
+				<el-table-column prop="userName" label="用户名" width="100" sortable>
+			</el-table-column>
+			<el-table-column prop="createTime" label="时间" width="200" sortable>
+			</el-table-column>
+			
 			<!-- <el-table-column prop="sex" label="社区等级" width="100" :formatter="formatSex" sortable>
 			</el-table-column> -->
-			<el-table-column prop="name" label="标题" width="150" sortable>
+			<el-table-column prop="userTitle" label="标题" width="150" sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="时间" width="100" sortable>
+		
+			<el-table-column prop="userContent" label="留言内容" width="400" sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="留言内容" width="400" sortable>
+			<el-table-column prop="messageStatus" :formatter="formatSex" label="状态" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="状态" width="100" sortable>
-			</el-table-column>
-			<el-table-column prop="name" label="图片" width="100" sortable>
-			</el-table-column>
+			
 			
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button type="danger" size="small" @click="handleEdit(scope.$index, scope.row)">查看回复</el-button>
+					<!-- <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
 		</el-table>
@@ -51,30 +55,42 @@
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="回复" v-model="editFormVisible" :close-on-click-modal="false">
+			
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				<el-row style="border:1px solid #999999;margin-top: 30px;">
+					
+					<el-col style="border-bottom:1px solid #999999;height:25px;line-height:1.7">
+						会员留言标题：{{editForm.userTitle}}
+					</el-col>
+					<el-col>
+						会员留言内容：{{editForm.userContent}}
+					</el-col>
+				</el-row>
+				
+				<el-row style="border:1px solid #999999;margin-top: 30px;">
+					
+					<el-col style="border-bottom:1px solid #999999;height:25px;line-height:1.7">
+						系统回复标题：{{editForm.systemTitle}}
+					</el-col>
+					<el-col style="font-size:15px;">
+					  系统回复内容：{{editForm.systemContent}}
+					</el-col>
+				</el-row>
+				
+				
+				
+				<!-- <el-form-item label="标题" prop="systemTitle">
+					<el-input v-model="editForm.systemTitle" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>
+				
+				<el-form-item label="内容">
+					<el-input type="textarea" v-model="editForm.systemContent"></el-input>
+				</el-form-item> -->
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button> -->
 			</div>
 		</el-dialog>
 
@@ -116,6 +132,7 @@
 	export default {
 		data() {
 			return {
+				
 				filters: {
 					name: ''
 				},
@@ -128,18 +145,15 @@
 				editFormVisible: false,//编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
+					systemTitle: [
+						{ required: true, message: '请输入标题', trigger: 'blur' }
 					]
 				},
 				//编辑界面数据
 				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
+					messageCode:'',
+					systemTitle:'',
+					systemContent:''
 				},
 
 				addFormVisible: false,//新增界面是否显示
@@ -156,29 +170,41 @@
 					age: 0,
 					birth: '',
 					addr: ''
-				}
+				},
+				pageNum: 1,
+				pageSize:20
 
 			}
 		},
 		methods: {
 			//性别显示转换
 			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+				return row.messageStatus == 1 ? '未回复' : row.messageStatus == 2 ? '已回复' : '未知';
 			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();
 			},
 			//获取用户列表
-			getUsers() {
+			getUsers: function () {
+				let _this = this
+				let params ={
+				    params: {
+				        messageStatus:2,
+				        pageNum:_this.pageNum,
+				        pageSize:_this.pageSize 
+				    }
+				}
 				
-				
-				this.$jsonp('https://api.asilu.com/geo/', {} ).then(res => {
-				　　// 返回数据 json， 返回的数据就是json格式
-				   console.log(res)
-				}).catch(err => {
-				　　console.log(err)
-				})
+				let url = this.baseUrl +'/cms_message/list'
+				this.$http.get(url,params)
+				.then((res)=>{
+				        console.log(res.body)
+						_this.users= res.body.data.list
+						_this.total = res.body.data.totalCount
+				    }).catch(function (error) {
+				        console.log(error)
+				    });
 				
 			},
 			//删除
@@ -220,16 +246,29 @@
 			},
 			//编辑
 			editSubmit: function () {
+				let _this  = this
 				this.$refs.editForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.editLoading = true;
 							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
+							let para = Object.assign({}, _this.editForm);
+							let params ={
+				                params: {
+									   messageCode: _this.editForm.messageCode,
+									   title: _this.editForm.systemTitle,		
+									   content: _this.editForm.systemContent
+
+								}
+							}
+							
+							console.log(para)
+							let url = this.baseUrl +'/cms_message/add'
+							this.$http.get(url,params)
+							.then((res) => {
+								console.log(res)
 								this.editLoading = false;
-								//NProgress.done();
+								
 								this.$message({
 									message: '提交成功',
 									type: 'success'
@@ -241,6 +280,7 @@
 						});
 					}
 				});
+				
 			},
 			//新增
 			addSubmit: function () {

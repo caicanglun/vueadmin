@@ -4,7 +4,17 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="filters.name" placeholder="ID号"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="status" placeholder="请选择">
+					    <el-option
+					      v-for="item in options"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					  </el-select>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="search">查询</el-button>
@@ -21,98 +31,55 @@
 			</el-table-column> -->
 			<!-- <el-table-column type="index" width="60">
 			</el-table-column> -->
-			<el-table-column prop="userCode" label="编号" width="120" >
+			<el-table-column prop="dealCode" label="交易编号" width="120" >
 			</el-table-column>
-			<el-table-column prop="userName" label="会员" width="140" sortable>
+			<el-table-column prop="buyOrderCode" label="买单编号" width="140" sortable>
 			</el-table-column>
-			<el-table-column prop="userLevel" label="动态等级" width="120" >
+			<el-table-column prop="sellOrderCode" label="卖单编号" width="120" >
 			</el-table-column>
-			<el-table-column prop="staticUserLevel" label="静态等级" width="120">
+			<el-table-column prop="usde" label="交易额" width="120" >
 			</el-table-column>
-			
-			<el-table-column prop="usde" label="奖金" width="120" sortable>
+			<el-table-column prop="usdtUnitPrice" label="usdt单价" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="signinUsde" label="注册币" width="100" sortable>
+			<el-table-column prop="proofPicture" label="凭证图片" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="superiorUserCode" label="推荐人" width="100" sortable>
+			<el-table-column prop="dealStatus" label="交易状态" width="100" sortable>
 			</el-table-column>
 			<!-- <el-table-column prop="sex" label="社区等级" width="100" :formatter="formatSex" sortable>
 			</el-table-column> -->
-			<el-table-column prop="energyPool" label="储能池" width="100" sortable>
+			<el-table-column prop="buyUserCode" label="买家ID" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="shuntPool" label="助力源" width="100" sortable>
+			<el-table-column prop="sellUserCode" label="卖家ID" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="creditToken" label="授信码" width="120" sortable>
+			<el-table-column prop="buyPhone" label="买家电话" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="userStatus" label="动态状态" width="120" >
+			<el-table-column prop="sellPhone" label="卖家电话" width="100">
 			</el-table-column>
-			<el-table-column prop="staticUserStatus" label="静态状态" width="100">
+			<el-table-column prop="dealTime" label="完成时间" width="100" sortable>
 			</el-table-column>
-			
-			<el-table-column prop="isMain" label="主账号" width="100">
+			<el-table-column prop="createTime" label="创建时间" width="100">
 			</el-table-column>
-			<el-table-column prop="leftPerformance" label="熵增业绩" width="100">
-			</el-table-column>
-			<el-table-column prop="rightPerformance" label="熵减业绩" width="100" sortable>
-			</el-table-column>
-			<el-table-column prop="usdtAddress" label="usdt地址" width="100" sortable>
-			</el-table-column>
-			
 
-			<el-table-column prop="createTime" label="注册时间" width="120" sortable>
-			</el-table-column>
-			
 			<el-table-column label="操作" width="200">
-				<template scope="scope" v-if="sysUserName =='admin'">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+				<template scope="scope">
+					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">強行交易</el-button> 
 					<!-- <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">团队</el-button> -->
 					<!-- <el-button type="warning" size="small" @click="handleJump(scope.$index, scope.row)">登录</el-button> -->
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<!--工具条-->
+		<!--工具条
 		<el-col :span="24" class="toolbar">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
+			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
-		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="钱包密码">
-					<el-input v-model="editForm.walletPassword" auto-complete="off"></el-input>
-				</el-form-item>
+		<!--编辑界面
+	
 
-				<el-form-item label="支付密码">
-					<el-input v-model="editForm.payPassword"></el-input>
-				</el-form-item>
-				<el-form-item label="邮箱地址">
-					<el-input v-model="editForm.mail"></el-input>
-				</el-form-item>
-				<el-form-item label="手机号码">
-					<el-input v-model="editForm.phone"></el-input>
-				</el-form-item>
-				
-				<el-form-item label="信用等级">
-					<el-input v-model="editForm.creditLevel"></el-input>
-				</el-form-item>
-				
-				
-				
-				<!-- <el-form-item label="是否服务中心">
-					<el-input v-model="editForm.isServiceCenterCode"></el-input>
-				</el-form-item> -->
-				
-				
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
-			</div>
-		</el-dialog>
-
+		<!--新增界面-->
 		
 	</section>
 </template>
@@ -136,39 +103,31 @@
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
-
-				editFormVisible: false,//编辑界面是否显示
-				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//编辑界面数据
-				editForm: {
-					userCode:'',         //用户编码
-					walletPassword:''	,        //密码
-					payPassword:'',//	二级密码
-					mail:'',			//		邮箱
-					phone:'',		//	手机。
-					creditLevel:'',		//	信用等级
-				},
-
-				addFormVisible: false,//新增界面是否显示
-				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//新增界面数据
-				addForm: {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
+                status:'',
+				options: [
+					{
+					  value: '',
+					  label: '全部'
+					}, 
+					{
+					  value: '0',
+					  label: '等待交易'
+					}, 
+					{
+					  value: '1',
+					  label: '已上传凭证'
+					},
+					{
+					  value: '2',
+					  label: '完成'
+					},
+					{
+					  value: '3',
+					  label: '取消'
+					}	
+					],
+				
+				
 				pageNum: 1,
 				pageSize:20,
 				userCode: '',
@@ -197,11 +156,12 @@
 					let params ={
 					    params: {
 					        keyword:_this.filters.name,
+							status: _this.status,
 					        pageNum:_this.pageNum,
 					        pageSize:_this.pageSize 
 					    }
 					}
-					let url = this.baseUrl +'/cms_app_user/list'
+					let url = this.baseUrl +'/cms_udeal/udeal_list'
 					this.$http.get(url,params)
 					.then((res)=>{
 					        console.log(res.body)
@@ -242,13 +202,31 @@
 			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
-				this.editForm.walletPassword = ''
-				this.editForm.payPassword = ''
-				// this.editForm.isLock = this.editForm.isLock==1?true:false
-				console.log(this.editForm)
-				this.userCode =  row.userCode
+				let _this = this
+				this.$confirm('确认强行交易该订单吗?', '提示', {
+					type: 'warning'
+				}).then(() => {
+					
+					let params ={
+					    params: {
+					      dealCode: row.dealCode 
+					    }
+					}
+					
+					let url = this.baseUrl +'/cms_udeal/finish'
+					this.$http.get(url,params)
+					.then((res)=>{
+					       if (res.body.status==0){
+					       	this.$message("交易成功")
+					       }
+						  _this.getUsers()
+					    }).catch(function (error) {
+					        console.log(error)
+					    });
+					
+				}).catch(() => {
+				
+				});
 			},
 			//显示新增界面
 			handleAdd: function () {
@@ -272,18 +250,24 @@
 							let para = Object.assign({}, _this.editForm);
 							let params ={
                                 params: {
-									userCode:_this.editForm.userCode,         //用户编码
-									walletPassword:_this.editForm.walletPassword||'',        //密码
-									payPassword:_this.editForm.payPassword||'',//	二级密码
-									mail:_this.editForm.mail,			//_this.editForm.邮箱
-									phone:_this.editForm.phone,		//	手机。
-									creditLevel:_this.editForm.creditLevel		//	信用等级   
+									   password: _this.editForm.password ||'',
+									   secondaryPassword: _this.editForm.secondaryPassword||'',
+									   eosWalletCode: _this.editForm.eosWalletCode ||'',
+									   memoRemarkCode: _this.editForm. memoRemarkCode||'',
+									   userCode:_this.editForm.userCode||'',
+									   mail: _this.editForm.mail||'',					
+									   userLevel:_this.editForm.userLevelCode||'',			    
+									   teamLevel : _this.editForm.teamLevelCode||'',
+									   isServiceCenter:_this.editForm.isServiceCenterCode ||'',			
+									   nickname: _this.editForm.nickname||'',				 
+									   isLock : _this.editForm.isLock==true?1:0	,
+									   weekReceive: _this.editForm.weekReceive
 							
 								}
 							}
 							
 							console.log(para)
-							let url = this.baseUrl +'/cms_app_user/update_user'
+							let url = this.baseUrl +'/member/memberUpdate'
 							this.$http.get(url,params)
 							.then((res) => {
 								console.log(res)

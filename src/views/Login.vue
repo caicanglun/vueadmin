@@ -23,8 +23,8 @@
       return {
         logining: false,
         ruleForm2: {
-          account: 'admin',
-          checkPass: '123456'
+          account: '',
+          checkPass: ''
         },
         rules2: {
           account: [
@@ -48,29 +48,47 @@
         this.$refs.ruleForm2.validate((valid) => {
           if (valid) {
             //_this.$router.replace('/table');
-            this.logining = true;
+            //this.logining = true;
             //NProgress.start();
-            var loginParams = { username: this.ruleForm2.account, password: this.ruleForm2.checkPass };
-            requestLogin(loginParams).then(data => {
-              this.logining = false;
-              //NProgress.done();
-              let { msg, code, user } = data;
-              if (code !== 200) {
-                this.$message({
-                  message: msg,
-                  type: 'error'
-                });
-              } else {
-                sessionStorage.setItem('user', JSON.stringify(user));
-                this.$router.push({ path: '/main' });
-              }
-            });
-          } else {
-            console.log('error submit!!');
-            return false;
+           // var loginParams = { username: this.ruleForm2.account, password: this.ruleForm2.account };
+		
+            
+			let _this = this
+			let params ={
+			    params: {
+			        userCode: this.ruleForm2.account,
+			         password: this.ruleForm2.checkPass
+			    }
+			}
+			let url = this.baseUrl +'/cms_user/login'
+			this.$http.get(url,params)
+			.then((res)=>{
+			        console.log(res)
+					console.log(res.body.message)
+					
+					
+					if (res.body.status== 0){
+						//sessionStorage.setItem('user', JSON.stringify(user));
+						 sessionStorage.setItem('user', JSON.stringify(res.body.data.msg));
+						this.$router.push( {path: '/main'} );
+					}
+					else {
+						this.$message({
+							message: res.body.message,
+							type: 'error'
+						});
+						return
+					}
+					
+			    }).catch(function (error) {
+			        console.log(error)
+			    });
+						
+             
           }
-        });
-      }
+        });  
+       
+     }
     }
   }
 

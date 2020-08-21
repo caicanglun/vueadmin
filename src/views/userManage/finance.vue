@@ -7,6 +7,16 @@
 					<el-input v-model="filters.name" placeholder="姓名"></el-input>
 				</el-form-item>
 				<el-form-item>
+					<el-select v-model="flowType" placeholder="请选择">
+					    <el-option
+					      v-for="item in options"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					  </el-select>
+				</el-form-item>
+				<el-form-item>
 					<el-button type="primary" v-on:click="search">查询</el-button>
 				</el-form-item>
 			<!-- 	<el-form-item>
@@ -21,25 +31,22 @@
 			</el-table-column> -->
 			<!-- <el-table-column type="index" width="60">
 			</el-table-column> -->
+			<el-table-column prop="userCode" label="用户ID" width="120" sortable>
+			</el-table-column>
 			<el-table-column prop="userName" label="用户" width="150" sortable>
 			</el-table-column>
 			<!-- <el-table-column prop="sex" label="社区等级" width="100" :formatter="formatSex" sortable>
 			</el-table-column> -->
-			<el-table-column prop="money" label="eos变动" width="120" sortable>
+			
+			<el-table-column prop="flowUsde" label="USDE" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="energy" label="能量变动" width="100" sortable>
+			<el-table-column prop="walletUsde" label="usde余额" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="integral" label="通证变动" width="100" sortable>
-			</el-table-column>
-			<el-table-column prop="walletMoney" label="EOS余额" width="150" sortable>
-			</el-table-column>
-			<el-table-column prop="walletEnergy" label="能量余额" width="100" sortable>
-			</el-table-column>
-			<el-table-column prop="walletIntegral" label="通证余额" width="100" sortable>
+			<el-table-column prop="signinUsde" label="注册币余额" width="120" sortable>
 			</el-table-column>
 			<el-table-column prop="details" label="变动原因" width="160" sortable>
 			</el-table-column>
-			<el-table-column prop="createTime" label="创建时间" width="200" sortable>
+			<el-table-column prop="flowCreateTime" label="创建时间" width="200" sortable>
 			</el-table-column>
 			
 			<!-- <el-table-column label="操作" width="150">
@@ -85,33 +92,7 @@
 			</div>
 		</el-dialog>
 
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-			</div>
-		</el-dialog>
+		
 	</section>
 </template>
 
@@ -126,9 +107,69 @@
 				filters: {
 					name: ''
 				},
+				options: [
+					
+						{
+						  value: '',
+						  label: '全部'
+						}, 
+					    {
+				          value: '動力A',
+				          label: '動力A'
+				        }, 
+						{
+				          value: '動力B',
+				          label: '動力B'
+				        }, {
+				          value: '動力C',
+				          label: '動力C'
+				        }, {
+				          value: '初始源',
+				          label: '初始源'
+				        }, {
+				          value: '提現',
+				          label: '提現'
+				        },
+						{
+						  value: '资金转资产',
+						  label: '资金转资产'
+						},
+						{
+						  value: '储能池释放',
+						  label: '储能池释放'
+						},
+						{
+						  value: '认购',
+						  label: '认购'
+						},
+						{
+						  value: 'USDF交易',
+						  label: 'USDF交易'
+						},
+						{
+						  value: '静态奖励',
+						  label: '静态奖励'
+						},
+						
+						{
+						  value: '动态复投',
+						  label: '动态复投'
+						},
+						{
+						  value: '静态复投',
+						  label: '静态复投'
+						},
+						{
+						  value: '系统赠送资产',
+						  label: '系统赠送资产'
+						}
+						
+						],
+				
 				userName:'',
 				pageNum:1,
 				pageSize:20,
+				flowType:'',
 				users: [],
 				total: 0,
 				page: 1,
@@ -188,13 +229,14 @@
 			    let _this = this
 				let params ={
 				    params: {
-				        userName:_this.filters.name,
+				        keyword:_this.filters.name,
+						flowType: _this.flowType,
 				        pageNum:_this.pageNum,
 				        pageSize:_this.pageSize 
 				    }
 				}
 				
-                let url = this.baseUrl +'/member/financialDetails'
+                let url = this.baseUrl +'/cms_deal/flow_list'
 				this.$http.get(url,params)
 				.then((res)=>{
 				        console.log(res.body)

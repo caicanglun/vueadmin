@@ -6,7 +6,7 @@
 		  			<el-input v-model="filters.name" placeholder="姓名"></el-input>
 		  		</el-form-item>
 		  		<el-form-item>
-		  			<el-button type="primary" v-on:click="getUsers">查询</el-button>
+		  			<el-button type="primary" v-on:click="search">查询</el-button>
 		  		</el-form-item>
 		  		<!-- <el-form-item>
 		  			<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -37,16 +37,10 @@
 	export default {
 		data() {
 			return {
-				      items: [{
-				          label: '一级 1',
-				          children: [{
-				            label: '二级 1-1',
-				            children: [{
-				              label: '三级 1-1-1'
-				            }]
-				          }]
-				        }],
-						
+				     
+					  userName:'',
+				      items: [
+				        ],
 
 				 defaultProps: {
 				          children: 'children',
@@ -56,48 +50,39 @@
 				filters: {
 					name: ''
 				},
-				users: [],
-				total: 0,
-				page: 1,
-				listLoading: false,
-				sels: [],//列表选中列
-
-				editFormVisible: false,//编辑界面是否显示
-				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//编辑界面数据
-				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
-
-				addFormVisible: false,//新增界面是否显示
-				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//新增界面数据
-				addForm: {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				}
-
+				
 			}
 		},
+		created:function(){
+			this.filters.name = this.$route.query.userName
+			this.search()
+		},
 		methods: {
+			search:function(){
+                    this.userName = this.filters.name
+					this.getUsers()
+				
+			},
+			getUsers:function() {
+				
+					let _this = this
+					let params ={
+					    params: {
+					        userName:this.userName,
+					       
+					    }
+					}
+					let url = this.baseUrl +'/member/team'
+					this.$http.get(url,params)
+					.then((res)=>{
+					        console.log(res)
+							_this.items = res.body.data.list
+							
+					    }).catch(function (error) {
+					        console.log(error)
+					    });
+			
+			},
 			handleNodeClick:function(data){
 				console.log(data);
 			},
@@ -109,30 +94,8 @@
 				this.page = val;
 				this.getUsers();
 			},
-			//获取用户列表
-			getUsers() {
-				// let para = {
-				// 	page: this.page,
-				// 	name: this.filters.name
-				// };
-				// this.listLoading = true;
-				// //NProgress.start();
-				// getUserListPage(para).then((res) => {
-				// 	console.log(res)
-				// 	this.total = res.data.total;
-				// 	this.users = res.data.users;
-				// 	this.listLoading = false;
-				// 	//NProgress.done();
-				// });
-				
-				this.$jsonp('https://api.asilu.com/geo/', {} ).then(res => {
-				　　// 返回数据 json， 返回的数据就是json格式
-				   console.log(res)
-				}).catch(err => {
-				　　console.log(err)
-				})
-				
-			},
+			
+			
 			//删除
 			handleDel: function (index, row) {
 				this.$confirm('确认删除该记录吗?', '提示', {

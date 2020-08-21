@@ -3,7 +3,21 @@ const LoginUsers = [
   {
     id: 1,
     username: 'admin',
-    password: '123456',
+    password: '98769876',
+    avatar: 'https://raw.githubusercontent.com/taylorchen709/markdown-images/master/vueadmin/user.png',
+    name: '张某某'
+  },
+  {
+    id: 2,
+    username: 'guest',
+    password: '22334455',
+    avatar: 'https://raw.githubusercontent.com/taylorchen709/markdown-images/master/vueadmin/user.png',
+    name: '李某某'
+  },
+  {
+    id: 3,
+    username: 'admin222',
+    password: '33445566',
     avatar: 'https://raw.githubusercontent.com/taylorchen709/markdown-images/master/vueadmin/user.png',
     name: '张某某'
   }
