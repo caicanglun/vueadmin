@@ -38,9 +38,9 @@
 			<!-- <el-table-column prop="sex" label="社区等级" width="100" :formatter="formatSex" sortable>
 			</el-table-column> -->
 			
-			<el-table-column prop="flowUsde" label="USDE" width="120" sortable>
+			<el-table-column prop="flowUsde" label="USDF" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="walletUsde" label="usde余额" width="120" sortable>
+			<el-table-column prop="walletUsde" label="USDF余额" width="120" sortable>
 			</el-table-column>
 			<el-table-column prop="signinUsde" label="注册币余额" width="120" sortable>
 			</el-table-column>
